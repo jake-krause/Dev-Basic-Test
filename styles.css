@@ -1,0 +1,242 @@
+/*============= CUSTOMIZATION SECTION =============*/
+:root {
+    /* Brand palette (unchanged) */
+    --yellow: #F2A900;
+    --grey  : #414042;
+    --blue  : #3E87CB;
+    --red   : #CB333B;
+    --teal  : #007467;
+    --lime  : #31B700;
+  
+    /* Site surfaces / text */
+    --bg         : #ffffff;
+    --text       : var(--grey);
+    --card-bg    : #f9f9f9;
+    --card-border: #e0e0e0;
+    --card-accent: var(--yellow);
+  
+    /* === Chat‑bubble colours (edit these) === */
+    --user-bubble-bg : var(--bg);
+    --user-bubble-fg : var(--grey);
+  
+    --bot-bubble-bg  : var(--blue);
+    --bot-bubble-fg  : #ffffff;
+  }
+  /*=================================================*/
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1b1d;
+      --text: #f5f5f5;
+      --card-bg: #242428;
+      --card-border: #333;
+    }
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  h2{
+    padding: 5px;
+  }
+  
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background: var(--yellow);
+    color: var(--grey);
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .logo-area img {
+    height: 32px;
+  }
+  .brand-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  /* Nav */
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropbtn {
+    background: transparent;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    min-width: 160px;
+    z-index: 10;
+  }
+  .dropdown-content a {
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    display: block;
+    text-decoration: none;
+  }
+  .dropdown-content a:hover {
+    background: var(--yellow);
+    color: var(--grey);
+  }
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+/* Layout */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    grid-template-areas:
+      "models  chat"
+      "extras  chat";
+    gap: 2rem;
+    padding: 2rem 1.5rem;
+    flex: 1;
+  }
+  
+  /* hook each section to its area */
+  .models      { grid-area: models; }
+  .chat-demo   { grid-area: chat;   }
+  .extras      { grid-area: extras; }
+  
+  /* Model cards */
+  .models .model-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  .model-card {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-left: 8px solid var(--card-accent);
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    transition: transform 0.15s ease;
+  }
+  .model-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  /* Chat area */
+  .chat-demo {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .chat-box {
+    flex: 1;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+  .msg {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    max-width: 85%;
+    word-wrap: break-word;
+  }
+  .msg.user {
+    background : var(--user-bubble-bg);
+    color      : var(--user-bubble-fg);
+    align-self : flex-end;
+    margin-left: auto;
+  }
+  .msg.bot {
+    background : var(--bot-bubble-bg);
+    color      : var(--bot-bubble-fg);
+    align-self : flex-start;
+    margin-right: auto;
+  }
+  
+  .chat-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .chat-form input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .chat-form button {
+    padding: 0.6rem 1rem;
+    background: var(--grey);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .chat-form button:hover {
+    opacity: 0.85;
+  }
+  /* ---------- Resources / Extras cards ---------- */
+.extras          { margin-top: 2.5rem; }
+.extras-grid     { display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+
+.extras-card {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  padding: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  line-height: 1.35;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.extras-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--yellow);
+}
+.extras-card h3 { font-size: 1rem; margin-bottom: .25rem; }
+.extras-card p  { font-size: .875rem; opacity: .8; }
+
+  
+/* mobile stack still works */
+@media (max-width: 800px) {
+    .container {
+      grid-template-areas:
+        "models"
+        "chat"
+        "extras";
+      grid-template-columns: 1fr;   /* single column */
+    }
+  }
+  

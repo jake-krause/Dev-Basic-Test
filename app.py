@@ -8,10 +8,12 @@ DEPLOYMENT_NAME = "Test_AI_Deployment"
 # -----------------------
 # Flask + Azure AI (streaming)
 # -----------------------
-from flask import Flask, Response, request, stream_with_context, send_from_directory
+from flask import (
+    Flask, Response, request, stream_with_context,
+    send_from_directory, make_response
+)
 from openai import AzureOpenAI
-import os
-
+import os, uuid
 
 client = AzureOpenAI(
     api_key        = AZURE_OPENAI_API_KEY,
@@ -19,56 +21,96 @@ client = AzureOpenAI(
     azure_endpoint = AZURE_ENDPOINT
 )
 
-# ─── Flask setup (everything served from current dir) ────────────────────────
 app = Flask(
     __name__,
-    template_folder=".",   # so render_template can find index.html right here
-    static_folder="."      # so /styles.css, /main.js, /logo.png resolve automatically
+    template_folder=".",
+    static_folder="."
 )
+
+# ─── very small in-memory store ──────────────────────────────────────────────
+# { session_id : [ {role: "user"/"assistant", content: "..."} , ... ] }
+CONVERSATIONS = {}
+MAX_HISTORY   = 20          # keep last 20 messages total (10 user/assistant pairs)
+
+def get_session_id() -> str:
+    """Return existing cookie or make a new one."""
+    sid = request.cookies.get("chat_sid")
+    if not sid:
+        sid = uuid.uuid4().hex
+    return sid
+
+def get_history(sid: str):
+    return CONVERSATIONS.setdefault(sid, [])
+
+# ─── routes ──────────────────────────────────────────────────────────────────
+# import uuid  (already in the file)
 
 @app.route("/")
 def home():
-    return app.send_static_file("index.html")   # equivalent to render_template here
+    # always mint a fresh session id → new blank conversation
+    new_sid = uuid.uuid4().hex
 
-# serve any other top‑level static file (e.g., gpt4o.html, docs.html)
+    # optional: tidy up memory from any previous SID the browser had
+    old_sid = request.cookies.get("chat_sid")
+    if old_sid in CONVERSATIONS:
+        del CONVERSATIONS[old_sid]
+
+    resp = make_response(app.send_static_file("index.html"))
+    resp.set_cookie("chat_sid", new_sid)     # no max_age → session cookie;
+                                             # but we overwrite it each load anyway
+    return resp
+
+
 @app.route("/<path:filename>")
 def root_files(filename):
-    # if file exists in current folder, serve it; otherwise 404 and let front‑end handle
     return send_from_directory(".", filename)
 
-# ---- Chat endpoint (streams text/plain) ------------------------------------
 @app.route("/ask", methods=["POST"])
 def ask():
     user_input = request.json.get("message", "")
+    sid        = get_session_id()
+    history    = get_history(sid)
+
+    # ---- assemble the prompt ----
+    messages = [
+        {
+            "role": "system",
+            "content":
+                "You are a demonstration assistant for the SECURA AI Hub. "
+                "Be friendly and fun, but do not write code or solve complex tasks."
+        },
+        *history,                       # ← earlier turns
+        {"role": "user", "content": user_input}
+    ]
 
     def generate():
-        """Yield a *single* token at a time + tiny heartbeat gaps."""
         try:
             stream = client.chat.completions.create(
                 model       = DEPLOYMENT_NAME,
                 stream      = True,
                 temperature = 0.7,
                 max_tokens  = 1000,
-                messages    = [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a demonstration assistant for the SECURA AI Hub. "
-                            "Be friendly and fun, but do not write code or solve complex tasks."
-                        )
-                    },
-                    {"role": "user", "content": user_input}
-                ]
+                messages    = messages
             )
+
+            assistant_response = []     # we’ll append tokens here
 
             for chunk in stream:
                 token = chunk.choices[0].delta.content
                 if token:
-                    # send just the *new* token
+                    assistant_response.append(token)
                     yield token
                 else:
-                    # tiny heartbeat so the browser sees progress even if no token yet
-                    yield " "
+                    yield " "          # heartbeat
+
+            # ---- save this turn ----
+            history.append({"role": "user",      "content": user_input})
+            history.append({"role": "assistant", "content": "".join(assistant_response)})
+
+            # trim old turns
+            if len(history) > MAX_HISTORY:
+                del history[: len(history) - MAX_HISTORY]
+
         except Exception as e:
             yield f"[Error] {e}"
 
@@ -77,11 +119,9 @@ def ask():
         mimetype="text/plain",
         headers={
             "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no"  # Nginx / Akamai / Cloudflare
+            "X-Accel-Buffering": "no"
         }
     )
 
-
 if __name__ == "__main__":
-    # use host="0.0.0.0" to expose on LAN if needed
-    app.run(debug=True)
+    app.run(debug=True)   # host="0.0.0.0" if you want LAN exposure

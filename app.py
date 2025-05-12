@@ -2,8 +2,8 @@
 # Your Azure API Key Setup
 # -----------------------
 AZURE_OPENAI_API_KEY = "Ah0TUKlywJuqkBwaHfJiqLJhXpJ8fksiuKPEBxJcHbaqej9oNmFqJQQJ99BAACHYHv6XJ3w3AAAAACOGBjre"
-AZURE_ENDPOINT = "https://ai-demohub605911395249.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview"
-DEPLOYMENT_NAME = "Test_AI_Deployment"
+AZURE_ENDPOINT = "https://ai-demohub605911395249.cognitiveservices.azure.com/"
+DEPLOYMENT_NAME = "gpt-4.1"
 
 # -----------------------
 # Flask + Azure AI (streaming)
@@ -17,7 +17,7 @@ import os, uuid
 
 client = AzureOpenAI(
     api_key        = AZURE_OPENAI_API_KEY,
-    api_version    = "2023-05-15",
+    api_version    = "2024-12-01-preview",
     azure_endpoint = AZURE_ENDPOINT
 )
 
@@ -75,11 +75,14 @@ def ask():
     messages = [
         {
             "role": "system",
-            "content":
-                "You are a demonstration assistant for the SECURA AI Hub. "
-                "Be friendly and fun, but do not write code or solve complex tasks."
+            "content": (
+                "You are a helpful assistant. "
+                "When you include code, ALWAYS wrap it in markdown fences, e.g.\n"
+                "```python\nprint('hi')\n```\n"
+                "so the frontend can render it correctly."
+            )
         },
-        *history,                       # ← earlier turns
+        *history,
         {"role": "user", "content": user_input}
     ]
 
@@ -93,15 +96,18 @@ def ask():
                 messages    = messages
             )
 
-            assistant_response = []     # we’ll append tokens here
+            assistant_response = []
 
             for chunk in stream:
-                token = chunk.choices[0].delta.content
+                # ---- real safety check ----
+                if not chunk.choices:
+                    continue   # skip empty chunks
+
+                choice = chunk.choices[0]
+                token = getattr(choice.delta, "content", None)
                 if token:
                     assistant_response.append(token)
                     yield token
-                else:
-                    yield " "          # heartbeat
 
             # ---- save this turn ----
             history.append({"role": "user",      "content": user_input})
@@ -113,6 +119,7 @@ def ask():
 
         except Exception as e:
             yield f"[Error] {e}"
+
 
     return Response(
         stream_with_context(generate()),

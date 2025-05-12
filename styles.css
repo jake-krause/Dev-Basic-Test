@@ -1,242 +1,371 @@
-/*============= CUSTOMIZATION SECTION =============*/
+/*****************************************************************
+ *  SECURA AI Hub – master stylesheet  (updated v2)
+ *  --------------------------------------------------------------
+ *  0. Editable constants
+ *  1. Theme tokens  (light & dark)
+ *  2. Reset / base typography
+ *  3. Fixed header
+ *  4. Fixed sidebar
+ *  5. Main content (chat column)
+ *  6. Components   (cards • chat bubbles • forms)
+ *  7. Scroll-to-bottom button
+ *  8. Responsive breakpoint
+ *****************************************************************/
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 0. EDITABLE CONSTANTS                                        */
+/*──────────────────────────────────────────────────────────────*/
 :root {
-    /* Brand palette (unchanged) */
-    --yellow: #F2A900;
-    --grey  : #414042;
-    --blue  : #3E87CB;
-    --red   : #CB333B;
-    --teal  : #007467;
-    --lime  : #31B700;
-  
-    /* Site surfaces / text */
-    --bg         : #ffffff;
-    --text       : var(--grey);
-    --card-bg    : #f9f9f9;
-    --card-border: #e0e0e0;
-    --card-accent: var(--yellow);
-  
-    /* === Chat‑bubble colours (edit these) === */
-    --user-bubble-bg : var(--bg);
-    --user-bubble-fg : var(--grey);
-  
-    --bot-bubble-bg  : var(--blue);
-    --bot-bubble-fg  : #ffffff;
-  }
-  /*=================================================*/
-  
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1b1b1d;
-      --text: #f5f5f5;
-      --card-bg: #242428;
-      --card-border: #333;
-    }
-  }
-  
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  h2{
-    padding: 5px;
-  }
-  
-  /* Top bar */
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1.5rem;
-    background: var(--yellow);
-    color: var(--grey);
-  }
-  .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .logo-area img {
-    height: 32px;
-  }
-  .brand-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-  
-  /* Nav */
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  .dropdown {
-    position: relative;
-  }
-  .dropbtn {
-    background: transparent;
-    border: none;
-    font: inherit;
-    cursor: pointer;
-  }
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    min-width: 160px;
-    z-index: 10;
-  }
-  .dropdown-content a {
-    color: var(--text);
-    padding: 0.5rem 1rem;
-    display: block;
-    text-decoration: none;
-  }
-  .dropdown-content a:hover {
-    background: var(--yellow);
-    color: var(--grey);
-  }
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-/* Layout */
-.container {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    grid-template-areas:
-      "models  chat"
-      "extras  chat";
-    gap: 2rem;
-    padding: 2rem 1.5rem;
-    flex: 1;
-  }
-  
-  /* hook each section to its area */
-  .models      { grid-area: models; }
-  .chat-demo   { grid-area: chat;   }
-  .extras      { grid-area: extras; }
-  
-  /* Model cards */
-  .models .model-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-  .model-card {
-    background: var(--card-bg);
-    border: 2px solid var(--card-border);
-    border-left: 8px solid var(--card-accent);
-    padding: 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--text);
-    font-weight: 600;
-    transition: transform 0.15s ease;
-  }
-  .model-card:hover {
-    transform: translateY(-3px);
-  }
-  
-  /* Chat area */
-  .chat-demo {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .chat-box {
-    flex: 1;
-    padding: 1rem;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    overflow-y: auto;
-    margin-bottom: 1rem;
-  }
-  .msg {
-    margin: 0.5rem 0;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    max-width: 85%;
-    word-wrap: break-word;
-  }
-  .msg.user {
-    background : var(--user-bubble-bg);
-    color      : var(--user-bubble-fg);
-    align-self : flex-end;
-    margin-left: auto;
-  }
-  .msg.bot {
-    background : var(--bot-bubble-bg);
-    color      : var(--bot-bubble-fg);
-    align-self : flex-start;
-    margin-right: auto;
-  }
-  
-  .chat-form {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .chat-form input {
-    flex: 1;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
-    background: var(--bg);
-    color: var(--text);
-  }
-  .chat-form button {
-    padding: 0.6rem 1rem;
-    background: var(--grey);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: opacity 0.15s ease;
-  }
-  .chat-form button:hover {
-    opacity: 0.85;
-  }
-  /* ---------- Resources / Extras cards ---------- */
-.extras          { margin-top: 2.5rem; }
-.extras-grid     { display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+  /* layout */
+  --header-h: 56px;
+  --sidebar-w: 260px;
+  --chat-max-w: 70rem;
+  --form-h: 56px; /* actual height of input bar incl. margins */
 
-.extras-card {
-  background: var(--card-bg);
-  border: 2px solid var(--card-border);
-  padding: 1rem;
-  border-radius: 8px;
-  text-decoration: none;
+  /* brand palette */
+  --yellow: #F2A900;
+  --grey: #414042;
+  --blue: #3E87CB;
+  --red: #CB333B;
+  --teal: #007467;
+  --lime: #31B700;
+
+  /* surfaces & text */
+  --bg: #f5f5f6;        /* page background */
+  --text: var(--grey);  /* default text colour */
+  --card-bg: #f9f9f9;   /* chat box & card background */
+  --card-border: #e0e0e0;
+
+  /* chat bubbles */
+  --user-bg: var(--grey);      /* darker pill for user */
+  --user-fg: #ffffff;
+  --bot-bg: var(--card-bg);    /* identical to chat‑box background */
+  --bot-fg: var(--text);
+}
+
+/* dark‑mode tweak */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1b1d;
+    --text: #f5f5f5;
+    --card-bg: #242428;
+    --card-border: #333;
+
+    --user-bg: #2d2d2f;
+    --user-fg: #ffffff;
+    --bot-bg: var(--card-bg);   /* blend with chat‑box */
+    --bot-fg: var(--text);
+  }
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 1. RESET & BASE TYPOGRAPHY                                   */
+/*──────────────────────────────────────────────────────────────*/
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
   color: var(--text);
-  line-height: 1.35;
-  transition: transform .15s ease, border-color .15s ease;
+  min-height: 100vh;
+  padding-top: var(--header-h); /* leave room for fixed header */
 }
-.extras-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--yellow);
-}
-.extras-card h3 { font-size: 1rem; margin-bottom: .25rem; }
-.extras-card p  { font-size: .875rem; opacity: .8; }
 
-  
-/* mobile stack still works */
+h2 {
+  font-size: 1.25rem;
+  padding: 0.25rem 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 2. FIXED HEADER                                              */
+/*──────────────────────────────────────────────────────────────*/
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--header-h);
+  padding: 0 1rem;
+  background: var(--yellow);
+  color: var(--grey);
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-area img {
+  height: 32px;
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 3. FIXED SIDEBAR (collapse-able)                             */
+/*──────────────────────────────────────────────────────────────*/
+.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  width: var(--sidebar-w);
+  height: calc(100vh - var(--header-h));
+  background: var(--card-bg);
+  border-right: 1px solid var(--card-border);
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar h2 {
+  padding: 1rem 0.75rem 0.25rem;
+}
+
+.model-grid,
+.resources-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 4. MAIN CONTENT COLUMN                                       */
+/*──────────────────────────────────────────────────────────────*/
+.content {
+  margin-left: var(--sidebar-w); /* push to the right of sidebar */
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed + .content {
+  margin-left: 0;
+}
+
+.chat-wrap {
+  max-width: var(--chat-max-w);
+  height: calc(100vh - var(--header-h));
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-box {
+  flex: 1;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow-y: auto;
+  margin-bottom: calc(var(--form-h) + 0.5rem); /* room for fixed bar */
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 5. COMPONENTS                                                */
+/*──────────────────────────────────────────────────────────────*/
+
+/* 5-A  Model / resource cards */
+.model-card,
+.resources-menu a {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--card-border);
+  background: var(--card-bg);
+  border-radius: 6px;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.model-card::before,
+.resources-menu a::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 8px;
+  border-radius: 4px 0 0 4px;
+  background: var(--card-accent, var(--yellow));
+}
+
+.model-card:hover,
+.resources-menu a:hover {
+  transform: translateY(-3px);
+}
+
+/* 5-B  Chat bubbles */
+.msg {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.msg.user {
+  display: inline-block;      /* shrink to content width */
+  margin-left: auto;          /* push to right */
+  background: var(--user-bg);
+  color: var(--user-fg);
+  text-align: right;
+}
+
+.msg.bot {
+  background: var(--bot-bg);
+  color: var(--bot-fg);
+}
+
+/* bullet & numbering always stay inside bubble */
+.msg ul,
+.msg ol {
+  margin: 0.5rem 0 0.5rem 1.25rem;
+  padding-left: 1rem;
+  list-style-position: inside;
+}
+
+.msg pre {
+  background: #272822;
+  color: #f8f8f2;
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* make the message column a flex container */
+.chat-box{
+  display:flex;
+  flex-direction:column;   /* keep messages top-to-bottom */
+}
+
+/* push user bubbles to the right edge */
+.msg.user{
+  align-self:flex-end;     /* right-align inside flex column */
+  /* (margin-left:auto; is no longer needed) */
+}
+
+
+/* 5-C  Fixed “type your message” bar */
+.chat-form {
+  position: fixed;
+  bottom: 1rem;
+  left: calc(var(--sidebar-w) + (100vw - var(--chat-max-w)) / 2);
+  width: var(--chat-max-w);
+  max-width: calc(100vw - var(--sidebar-w) - 2rem);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 950;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.chat-form button {
+  padding: 0.6rem 1rem;
+  background: var(--grey);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.chat-form button:hover {
+  opacity: 0.85;
+}
+
+
+/*──────────────────────────────────────────────────────────────*/
+/* 6. SCROLL-TO-BOTTOM BUTTON                                   */
+/*──────────────────────────────────────────────────────────────*/
+#scroll-bottom-btn {
+  position: fixed;
+  bottom: calc(1rem + var(--form-h) + 0.5rem);
+  left: calc(var(--sidebar-w) + 50%);
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2;
+}
+/*──────────────────────────────────────────────────────────────*/
+/* 7. RESPONSIVE (≤ 800 px)                                     */
+/*──────────────────────────────────────────────────────────────*/
 @media (max-width: 800px) {
-    .container {
-      grid-template-areas:
-        "models"
-        "chat"
-        "extras";
-      grid-template-columns: 1fr;   /* single column */
-    }
+  /* Sidebar becomes overlay */
+  .sidebar {
+    height: 100vh;
+    top: 0;
+    z-index: 1001;
   }
-  
+
+  body {
+    padding-top: var(--header-h); /* still leave header space */
+  }
+
+  .content {
+    margin-left: 0; /* ignore sidebar width */
+  }
+
+  /* Centre chat & input bar for full viewport width */
+  .chat-wrap {
+    width: 100%;
+  }
+
+  /* let JS take over positioning */
+  .chat-form,
+  #scroll-bottom-btn {
+    left: 0 !important; /* JS will overwrite */
+    width: 100% !important;
+    transform: translateX(0) !important;
+  }
+}

@@ -3,93 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Hub</title>
+  <title>SECURA AI Hub</title>
 
+  <!-- Marked: renders markdown code-blocks -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-
-
-  <!-- ============== QUICK‑EDIT CONFIG (JSON) ============== -->
-  <!--  Change values inside this block to update branding, links, etc. -->
-  <script id="page-config" type="application/json">
-  {
-    "logoSrc": "black_logo.png",
-    "brandName": "SECURA AI Hub",
-    "modelLinks": [
-      { "title": "GPT‑4.1",    "href": "gpt4o.html",  "color": "#F2A900" },
-      { "title": "Claude 3",  "href": "claude3.html", "color": "#3E87CB" },
-      { "title": "Gemini 1.5", "href": "gemini15.html", "color": "#007467" },
-      { "title": "SECURA AI", "href": "gemini15.html", "color": "#CB333B" },
-      { "title": "UW AI", "href": "gemini15.html", "color": "#F2A900" },
-      { "title": "Gemini 2.5", "href": "gemini15.html", "color": "#007467" },
-      { "title": "GPT 4.1 nano", "href": "gemini15.html", "color": "#31B700" }
-    ],
-    "resources": [
-      { "label": "Documentation",   "href": "docs.html" },
-      { "label": "Usage Analytics", "href": "analytics.html" },
-      { "label": "Support",         "href": "mailto:support@example.com" }
-    ],
-    "askEndpoint": "/ask"
-  }
-  </script>
-  <!-- =======================================================-->
-
-  <!--=================================================================
-   BRANDING COLOR PALETTE  —  REFERENCE ONLY (matches styles.css)
-   -------------------------------------------------------------
-     --yellow : #F2A900   // Primary accent & top‑bar background
-     --grey   : #414042   // Dark text / button background
-     --blue   : #3E87CB   // Secondary accent (bot bubbles, links)
-     --red    : #CB333B   // Error / warning accent
-     --teal   : #007467   // Additional accent option
-     --lime   : #31B700   // Success accent option
-   =================================================================-->
-
+  <!-- optional per-page overrides -->
+  <script id="page-config" type="application/json"></script>
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- ───── TOP BAR ─────────────────────────────────────────────────────── -->
   <header class="top-bar">
+    <button id="sidebar-toggle" class="hamburger" aria-label="Toggle menu">☰</button>
+
     <div class="logo-area">
-      <img id="logo" alt="Logo" />
+      <img id="logo" alt="logo" />
       <span class="brand-name"></span>
     </div>
-    <nav class="nav">
-      <ul class="nav-links">
-        <li class="dropdown">
-          <button class="dropbtn">Resources ▾</button>
-          <div class="dropdown-content" id="resources-menu"></div>
-        </li>
-      </ul>
-    </nav>
   </header>
 
-  <main class="container">
-    <!-- LEFT column --------------------------------------------------------->
-    <section class="models">
-      <h2>Popular Models</h2>
-      <div class="model-grid" id="model-grid"><!-- populated by JS --></div>
-    </section>
-  
-    <!-- new Resources section (auto‑hidden if no extras in config) -->
-    <section class="extras" id="extras-section">
-      <h2>AI Resources</h2>
-      <div class="extras-grid" id="extras-grid"><!-- populated by JS --></div>
-    </section>
-  
-    <!-- RIGHT column -------------------------------------------------------->
-    <section class="chat-demo">
-      <h2>Example Chat</h2>
-      <div id="chat-box" class="chat-box"></div>
-      <form id="chat-form" class="chat-form">
-        <input
-          type="text"
-          id="user-input"
-          placeholder="Type your message..."
-          autocomplete="off"
-          required
-        />
-        <button type="submit" id="send-btn">Send</button>
-      </form>
+  <!-- ───── MAIN FLEX LAYOUT ────────────────────────────────────────────── -->
+  <main class="layout">
+    <!-- ▸ SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <h2>Models</h2>
+      <div id="model-grid" class="model-grid"></div>
+
+      <h2>Resources</h2>
+      <nav id="resources-menu" class="resources-menu"></nav>
+    </aside>
+
+    <!-- ▸ CHAT AREA -->
+    <section class="content">
+      <div class="chat-wrap">
+        <h2>Example Chat</h2>
+
+        <div id="chat-box" class="chat-box"></div>
+
+        <form id="chat-form" class="chat-form">
+          <input id="user-input" type="text" placeholder="Type your message…" autocomplete="off" required />
+          <button id="send-btn" type="submit">Send</button>
+        </form>
+      </div>
     </section>
   </main>
 
